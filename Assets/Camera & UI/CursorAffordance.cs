@@ -41,9 +41,9 @@ public class CursorAffordance : MonoBehaviour {
     /**
     *  FUNCTIONS
     * */
-    private void OnLayerChange()
+    private void OnLayerChange(Layer newLayer)
     {
-        switch (cameraRaycaster.currentLayerHit)
+        switch (newLayer)
         {
             case Layer.Walkable:
                 Cursor.SetCursor(walkCursor, cursorHotspot, CursorMode.Auto);

@@ -11,8 +11,8 @@ public class CameraRaycaster : MonoBehaviour
         Layer.Enemy,
         Layer.Walkable
     };
-    public delegate void OnLayerHasChanged();               // Delclare the delagate
-    public OnLayerHasChanged layerChangeObserver;           // Instantiate an observer
+    public delegate void OnLayerHasChanged(Layer newLayer);               // Delclare the delagate
+    public event OnLayerHasChanged layerChangeObserver;           // Instantiate an observer
 
 
 
@@ -55,7 +55,7 @@ public class CameraRaycaster : MonoBehaviour
                 if (layerHit != layer)
                 {
                     layerHit = layer;
-                    layerChangeObserver();
+                    layerChangeObserver(layer);
                 }
 
                 layerHit = layer;
