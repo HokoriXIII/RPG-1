@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+
+[RequireComponent(typeof(CameraRaycaster))]
 public class CursorAffordance : MonoBehaviour {
 
     /**
@@ -10,7 +12,7 @@ public class CursorAffordance : MonoBehaviour {
     [SerializeField] Texture2D walkCursor = null;
     [SerializeField] Texture2D attackCursor = null;
     [SerializeField] Texture2D noWalkCursor = null;
-    [SerializeField] Vector2 cursorHotspot = new Vector2(96, 96);
+    [SerializeField] Vector2 cursorHotspot = new Vector2(0, 0);
     private CameraRaycaster cameraRaycaster;
 
 
@@ -23,12 +25,25 @@ public class CursorAffordance : MonoBehaviour {
     private void Start()
     {
         cameraRaycaster = GameObject.FindObjectOfType<CameraRaycaster>();
+        cameraRaycaster.layerChangeObserver += OnLayerChange;                       // Add our function to the delegate list
     }
 
 
-    private void Update()
+
+
+
+
+
+
+
+
+
+    /**
+    *  FUNCTIONS
+    * */
+    private void OnLayerChange()
     {
-        switch (cameraRaycaster.layerHit)
+        switch (cameraRaycaster.currentLayerHit)
         {
             case Layer.Walkable:
                 Cursor.SetCursor(walkCursor, cursorHotspot, CursorMode.Auto);
@@ -43,17 +58,6 @@ public class CursorAffordance : MonoBehaviour {
                 Debug.LogError("CursorAffordance-Update-Layer not supported");
                 break;
         }
-        
+
     }
-
-
-
-
-
-
-
-
-    /**
-    *  FUNCTIONS
-    * */
 }

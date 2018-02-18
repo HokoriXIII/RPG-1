@@ -2,44 +2,46 @@
 
 public class CameraRaycaster : MonoBehaviour
 {
+
+    /**
+     * VARIABLES
+     * */
+
     public Layer[] layerPriorities = {
         Layer.Enemy,
         Layer.Walkable
     };
-
-
+    public delegate void OnLayerHasChanged();               // Delclare the delagate
+    public OnLayerHasChanged layerChangeObserver;           // Instantiate an observer
 
 
 
     [SerializeField]float distanceToBackground = 100f;
-    Camera viewCamera;
-
-
-    RaycastHit m_hit;
-    public RaycastHit hit
-    {
-        get { return m_hit; }
-    }
 
 
 
+    private Camera viewCamera;
+    private RaycastHit raycastHit;
+    private Layer layerHit;
 
-    Layer m_layerHit;
-    public Layer layerHit
-    {
-        get { return m_layerHit; }
-    }
-
+    
 
 
-    void Start() // TODO Awake?
+
+
+   
+
+
+
+    /**
+     * CLASS FUNCTIONS
+     * */
+    private void Start()
     {
         viewCamera = Camera.main;
     }
 
-
-
-    void Update()
+    private void Update()
     {
         // Look for and return priority layer hit
         foreach (Layer layer in layerPriorities)
@@ -47,22 +49,35 @@ public class CameraRaycaster : MonoBehaviour
             var hit = RaycastForLayer(layer);
             if (hit.HasValue)
             {
-                m_hit = hit.Value;
-                m_layerHit = layer;
+                raycastHit = hit.Value;
+
+                // If we are looking at a different layer than let all functions listening to our delagate know
+                if (layerHit != layer)
+                {
+                    layerHit = layer;
+                    layerChangeObserver();
+                }
+
+                layerHit = layer;
                 return;
             }
         }
 
 
         // Otherwise return background hit
-        m_hit.distance = distanceToBackground;
-        m_layerHit = Layer.RaycastEndStop;
+        raycastHit.distance = distanceToBackground;
+        layerHit = Layer.RaycastEndStop;
     }
 
 
 
 
-    RaycastHit? RaycastForLayer(Layer layer)
+
+
+    /**
+     * FUNCTIONS
+     * */
+    public RaycastHit? RaycastForLayer(Layer layer)
     {
         int layerMask = 1 << (int)layer; // See Unity docs for mask formation
         Ray ray = viewCamera.ScreenPointToRay(Input.mousePosition);
@@ -74,5 +89,15 @@ public class CameraRaycaster : MonoBehaviour
             return hit;
         }
         return null;
+    }
+
+    public Layer currentLayerHit
+    {
+        get { return layerHit; }
+    }
+
+    public RaycastHit hit
+    {
+        get { return raycastHit; }
     }
 }
