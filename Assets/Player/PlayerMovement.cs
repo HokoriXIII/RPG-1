@@ -10,9 +10,11 @@ public class PlayerMovement : MonoBehaviour
      * */
     private ThirdPersonCharacter character;   // A reference to the ThirdPersonCharacter on the object
     private CameraRaycaster cameraRaycaster;
-    private Vector3 currentClickTarget;
+    private Vector3 currentDestination;
+    private Vector3 clickPoint;
     private bool isMouseMovementMode = true;
-    [SerializeField] float walkMoveStopRadius = 5f;
+    [SerializeField] float walkMoveStopRadius = 1f;
+    [SerializeField] float attackMoveStopRadius = 5f;
 
 
 
@@ -26,10 +28,8 @@ public class PlayerMovement : MonoBehaviour
         cameraRaycaster = Camera.main.GetComponent<CameraRaycaster>();
         character = GetComponent<ThirdPersonCharacter>();
 
-        currentClickTarget = transform.position;
+        currentDestination = transform.position;
     }
-
-
 
     // Fixed update is called in sync with physics
     private void FixedUpdate()
@@ -40,7 +40,7 @@ public class PlayerMovement : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.G))
         {
             isMouseMovementMode = !isMouseMovementMode;
-            currentClickTarget = transform.position;
+            currentDestination = transform.position;
         }
 
 
@@ -56,6 +56,24 @@ public class PlayerMovement : MonoBehaviour
     }
 
 
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.black;
+
+        // Draw a line for our current movement
+        Gizmos.DrawLine(transform.position, currentDestination);
+        Gizmos.DrawSphere(currentDestination, 0.1f);
+
+        // Visualize walk stop radius
+        Gizmos.DrawSphere(clickPoint, .15f);
+
+
+        // Draw attack sphere
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(transform.position, attackMoveStopRadius);
+    }
+
+
 
 
 
@@ -68,12 +86,15 @@ public class PlayerMovement : MonoBehaviour
     {
         if (Input.GetMouseButton(0))
         {
+            clickPoint = cameraRaycaster.hit.point;
+
             switch (cameraRaycaster.currentLayerHit)
             {
                 case Layer.Walkable:
-                    currentClickTarget = cameraRaycaster.hit.point;
+                    currentDestination = ShortDestination(clickPoint, walkMoveStopRadius);
                     break;
                 case Layer.Enemy:
+                    currentDestination = ShortDestination(clickPoint, attackMoveStopRadius);
                     break;
                 default:
                     Debug.Log("Layer is not supported.");
@@ -83,9 +104,9 @@ public class PlayerMovement : MonoBehaviour
 
 
         // Move the character if we are in the radius of the click
-        var playerToClickPoint = currentClickTarget - transform.position;
+        var playerToClickPoint = currentDestination - transform.position;
 
-        if (playerToClickPoint.magnitude >= walkMoveStopRadius)
+        if (playerToClickPoint.magnitude >= 0)
             character.Move(playerToClickPoint, false, false);
         else
             character.Move(Vector3.zero, false, false);
@@ -105,6 +126,13 @@ public class PlayerMovement : MonoBehaviour
         Vector3 move = v * camForward + h * Camera.main.transform.right;
 
         character.Move(move, false, false);
+    }
+
+
+    private Vector3 ShortDestination(Vector3 destination, float shortening)
+    {
+        Vector3 reductionVector = (destination - transform.position).normalized * shortening;
+        return (destination - reductionVector);
     }
 }
 
