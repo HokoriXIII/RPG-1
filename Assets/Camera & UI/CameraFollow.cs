@@ -7,8 +7,14 @@ public class CameraFollow : MonoBehaviour {
     /**
     *  VARIABLES
     * */
-    private GameObject player;
+    public bool fixedCamera = true;
 
+
+
+    private GameObject player;
+    private GameObject myCamera;
+    private Vector3 savedRotation;
+    
 
 
 
@@ -19,6 +25,8 @@ public class CameraFollow : MonoBehaviour {
     private void Start()
     {
         player = GameObject.FindGameObjectWithTag("Player");
+        myCamera = GameObject.FindGameObjectWithTag("MainCamera");
+        savedRotation = myCamera.transform.rotation.eulerAngles;
     }
 
 
@@ -30,6 +38,11 @@ public class CameraFollow : MonoBehaviour {
     private void LateUpdate()
     {
         transform.position = player.transform.position;
+
+        if (!fixedCamera)
+            myCamera.transform.rotation = player.transform.rotation;
+        else
+            myCamera.transform.eulerAngles  = savedRotation;
     }
 
 

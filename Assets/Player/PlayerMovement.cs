@@ -96,8 +96,10 @@ public class PlayerMovement : MonoBehaviour
                 case Layer.Enemy:
                     currentDestination = ShortDestination(clickPoint, attackMoveStopRadius);
                     break;
+                case Layer.RaycastEndStop:
+                    break;
                 default:
-                    Debug.Log("Layer is not supported.");
+                    Debug.Log("Layer " + cameraRaycaster.currentLayerHit + " is not supported.");
                     break;
             }
         }
