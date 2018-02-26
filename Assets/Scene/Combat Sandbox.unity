@@ -1460,15 +1460,15 @@ Prefab:
     m_Modifications:
     - target: {fileID: 4683684763956334, guid: 3c6f81cb654878e40a7d29511614fff4, type: 2}
       propertyPath: m_LocalPosition.x
-      value: 44.5
+      value: 18.63
       objectReference: {fileID: 0}
     - target: {fileID: 4683684763956334, guid: 3c6f81cb654878e40a7d29511614fff4, type: 2}
       propertyPath: m_LocalPosition.y
-      value: 12.17
+      value: 12.28
       objectReference: {fileID: 0}
     - target: {fileID: 4683684763956334, guid: 3c6f81cb654878e40a7d29511614fff4, type: 2}
       propertyPath: m_LocalPosition.z
-      value: -48.03
+      value: -74.49
       objectReference: {fileID: 0}
     - target: {fileID: 4683684763956334, guid: 3c6f81cb654878e40a7d29511614fff4, type: 2}
       propertyPath: m_LocalRotation.x
@@ -1611,6 +1611,11 @@ Prefab:
     - target: {fileID: 114481948279301994, guid: c2834b678fad66b41872ed86c98805aa,
         type: 2}
       propertyPath: fixedCamera
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114481948279301994, guid: c2834b678fad66b41872ed86c98805aa,
+        type: 2}
+      propertyPath: followCamera
       value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
