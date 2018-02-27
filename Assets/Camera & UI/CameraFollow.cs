@@ -44,18 +44,19 @@ public class CameraFollow : MonoBehaviour {
     private void LateUpdate()
     {
         // Move our camera arm to the location of our player
-        transform.position = player.transform.position;
+        
 
 
 
         if (fixedCamera)
-        {      
+        {
+            transform.position = player.transform.position;
             myCamera.transform.rotation = savedRotation;
             myCamera.transform.position = transform.position + savedPositionOffset;
         }
         else
         {
-            myCamera.transform.rotation = Quaternion.Lerp(myCamera.transform.rotation, transform.rotation, (1f * Time.deltaTime));
+            //SmoothFollow();           
 
         }
     }
@@ -70,4 +71,32 @@ public class CameraFollow : MonoBehaviour {
     /**
     *  FUNCTIONS
     * */
+
+    // TODO: Still working on this
+    private void SmoothFollow()
+    {
+        float distanceFromTarget = 8f;
+        float heightAboveGround = 2f;
+
+        float rotationDamping = 10f;
+        float moveDamping = 5f;
+
+
+
+
+        transform.position = Vector3.Lerp(transform.position, player.transform.position, Time.deltaTime * moveDamping);
+        Vector3 wantedCameraPosition = transform.TransformPoint(0, heightAboveGround, -distanceFromTarget);  
+        myCamera.transform.position = Vector3.Lerp(myCamera.transform.position, wantedCameraPosition, Time.deltaTime * moveDamping);
+
+
+
+
+        Quaternion wantedRotation = Quaternion.LookRotation(player.transform.position - transform.position, player.transform.up);
+        transform.rotation = Quaternion.Slerp(transform.rotation, wantedRotation, Time.deltaTime * rotationDamping);
+        //myCamera.transform.rotation.SetLookRotation(transform.position);
+
+
+
+
+    }
 }
