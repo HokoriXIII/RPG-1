@@ -9,10 +9,16 @@ public class CursorAffordance : MonoBehaviour {
     /**
     *  VARIABLES
     * */
+    [SerializeField] const int walkableLayerNumber = 8;
+    [SerializeField] const int enemyLayerNumber = 9;
+
+
     [SerializeField] Texture2D walkCursor = null;
     [SerializeField] Texture2D attackCursor = null;
-    [SerializeField] Texture2D noWalkCursor = null;
+    [SerializeField] Texture2D unknownCursor = null;
     [SerializeField] Vector2 cursorHotspot = new Vector2(0, 0);
+    
+
     private CameraRaycaster cameraRaycaster;
 
 
@@ -25,7 +31,7 @@ public class CursorAffordance : MonoBehaviour {
     private void Start()
     {
         cameraRaycaster = GameObject.FindObjectOfType<CameraRaycaster>();
-        cameraRaycaster.layerChangeObserver += OnLayerChange;                       // Add our function to the delegate list
+        cameraRaycaster.notifyLayerChangeObservers += OnLayerChange;                       // Add our function to the delegate list
     }
 
 
@@ -41,21 +47,18 @@ public class CursorAffordance : MonoBehaviour {
     /**
     *  FUNCTIONS
     * */
-    private void OnLayerChange(Layer newLayer)
+    private void OnLayerChange(int newLayer)
     {
         switch (newLayer)
         {
-            case Layer.Walkable:
+            case walkableLayerNumber:
                 Cursor.SetCursor(walkCursor, cursorHotspot, CursorMode.Auto);
                 break;
-            case Layer.Enemy:
+            case enemyLayerNumber:
                 Cursor.SetCursor(attackCursor, cursorHotspot, CursorMode.Auto);
                 break;
-            case Layer.RaycastEndStop:
-                Cursor.SetCursor(noWalkCursor, cursorHotspot, CursorMode.Auto);
-                break;
             default:
-                Debug.LogError("CursorAffordance-Update-Layer not supported");
+                Cursor.SetCursor(unknownCursor, cursorHotspot, CursorMode.Auto);
                 break;
         }
 

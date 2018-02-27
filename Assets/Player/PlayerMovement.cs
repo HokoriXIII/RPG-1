@@ -84,34 +84,16 @@ public class PlayerMovement : MonoBehaviour
      * */
     private void ProcessMouseMovement()
     {
-        if (Input.GetMouseButton(0))
-        {
-            clickPoint = cameraRaycaster.hit.point;
-
-            switch (cameraRaycaster.currentLayerHit)
-            {
-                case Layer.Walkable:
-                    currentDestination = ShortDestination(clickPoint, walkMoveStopRadius);
-                    break;
-                case Layer.Enemy:
-                    currentDestination = ShortDestination(clickPoint, attackMoveStopRadius);
-                    break;
-                case Layer.RaycastEndStop:
-                    break;
-                default:
-                    Debug.Log("Layer " + cameraRaycaster.currentLayerHit + " is not supported.");
-                    break;
-            }
-        }
+        
 
 
-        // Move the character if we are in the radius of the click
-        var playerToClickPoint = currentDestination - transform.position;
+        //// Move the character if we are in the radius of the click
+        //var playerToClickPoint = currentDestination - transform.position;
 
-        if (playerToClickPoint.magnitude >= 0)
-            character.Move(playerToClickPoint, false, false);
-        else
-            character.Move(Vector3.zero, false, false);
+        //if (playerToClickPoint.magnitude >= 0)
+        //    character.Move(playerToClickPoint, false, false);
+        //else
+        //    character.Move(Vector3.zero, false, false);
     }
 
 
