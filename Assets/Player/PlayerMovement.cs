@@ -1,20 +1,28 @@
 using System;
 using UnityEngine;
 using UnityStandardAssets.Characters.ThirdPerson;
+using UnityEngine.AI;
 
 [RequireComponent(typeof (ThirdPersonCharacter))]
+[RequireComponent(typeof (NavMeshAgent))]
+[RequireComponent(typeof (AICharacterControl))]
 public class PlayerMovement : MonoBehaviour
 {
     /**
      * VARIABLES
      * */
-    private ThirdPersonCharacter character;   // A reference to the ThirdPersonCharacter on the object
-    private CameraRaycaster cameraRaycaster;
+    private ThirdPersonCharacter character = null;   // A reference to the ThirdPersonCharacter on the object
+    private CameraRaycaster cameraRaycaster = null;
+    private AICharacterControl aiCharacterControl = null;
+    private GameObject walkTarget = null;
     private Vector3 currentDestination;
-    private Vector3 clickPoint;
     private bool isMouseMovementMode = true;
-    [SerializeField] float walkMoveStopRadius = 1f;
-    [SerializeField] float attackMoveStopRadius = 5f;
+
+
+
+    [SerializeField] const int walkableLayerNumber = 8;
+    [SerializeField] const int enemyLayerNumber = 9;
+
 
 
 
@@ -25,11 +33,21 @@ public class PlayerMovement : MonoBehaviour
      * */
     private void Start()
     {
+        // Get handles to our gameobjects
         cameraRaycaster = Camera.main.GetComponent<CameraRaycaster>();
         character = GetComponent<ThirdPersonCharacter>();
+        aiCharacterControl = GetComponent<AICharacterControl>();
+        walkTarget = new GameObject("walkTarget");
 
+
+        // Add our function to the listener of the raycaster
+        cameraRaycaster.notifyMouseClickObservers += ProccessMouseClick;
+
+
+        // Save our starting position
         currentDestination = transform.position;
     }
+
 
     // Fixed update is called in sync with physics
     private void FixedUpdate()
@@ -44,33 +62,24 @@ public class PlayerMovement : MonoBehaviour
         }
 
 
-
-        // Use the mouse
-        if (isMouseMovementMode)
-            ProcessMouseMovement();
-        // Use keyboard or gamepad
-        else
-            ProcessKeyboardMovement();
-
-
     }
 
 
     private void OnDrawGizmos()
     {
-        Gizmos.color = Color.black;
+        //Gizmos.color = Color.black;
 
-        // Draw a line for our current movement
-        Gizmos.DrawLine(transform.position, currentDestination);
-        Gizmos.DrawSphere(currentDestination, 0.1f);
+        //// Draw a line for our current movement
+        //Gizmos.DrawLine(transform.position, currentDestination);
+        //Gizmos.DrawSphere(currentDestination, 0.1f);
 
-        // Visualize walk stop radius
-        Gizmos.DrawSphere(clickPoint, .15f);
+        //// Visualize walk stop radius
+        //Gizmos.DrawSphere(clickPoint, .15f);
 
 
-        // Draw attack sphere
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, attackMoveStopRadius);
+        //// Draw attack sphere
+        //Gizmos.color = Color.red;
+        //Gizmos.DrawWireSphere(transform.position, attackMoveStopRadius);
     }
 
 
@@ -82,18 +91,25 @@ public class PlayerMovement : MonoBehaviour
     /**
      * FUNCTIONS
      * */
-    private void ProcessMouseMovement()
+    private void ProccessMouseClick(RaycastHit raycastHit, int layerHit)
     {
-        
+        switch (layerHit)
+        {
+            case enemyLayerNumber:
+                // Navigate to enemy
+                GameObject enemy = raycastHit.collider.gameObject;
+                aiCharacterControl.SetTarget(enemy.transform);
+                break;
+            case walkableLayerNumber:
+                // Navigate to point on ground
+                walkTarget.transform.position = raycastHit.point;
+                aiCharacterControl.SetTarget(walkTarget.transform);
+                break;
+            default:
+                Debug.LogError("PlayerMovement-ProcessMouseClick-Dont know the layer to use: " + layerHit);
+                break;
+        }
 
-
-        //// Move the character if we are in the radius of the click
-        //var playerToClickPoint = currentDestination - transform.position;
-
-        //if (playerToClickPoint.magnitude >= 0)
-        //    character.Move(playerToClickPoint, false, false);
-        //else
-        //    character.Move(Vector3.zero, false, false);
     }
 
 
